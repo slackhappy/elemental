@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+    <script src="elements.js"></script>
+  </head>
+  <body>
+    <textarea id="message"></textarea>
+    <div id="encoded"></div>
+    <script>
+      var symbols = {};
+      var memoized = {}; 
+      function options(str) {
+        var options = [];
+        for (size in symbols) {
+          if (str.length >= size) {
+            end = str.substring(str.length - size).toLowerCase();
+            if (end in symbols[size]) {
+              options.push([symbols[size][end], str.substring(0, str.length - size)]);
+            }
+          }
+        }
+        return options;
+      }
+
+      var unsuccessful = [false, []];
+
+      function encode(str) {
+        if (!str) {
+          return [true, []];
+        }
+        if (str in memoized) {
+          return memoized[str];
+        }
+
+        var opts = options(str);
+        for (optIdx in opts) {
+          var rest = opts[optIdx][1];
+          var result = encode(rest);
+          if (result[0]) {
+            var combined = [true, result[1].concat([opts[optIdx[0]]])];
+            memoized[str] = combined;
+            return combined;
+          }
+        }
+        memoized[str] = unsuccessful;
+        return unsuccessful;
+      }
+
+      $(document).ready(function() {
+        for (e in elements) {
+          var symbol = elements[e]['symbol'];
+          if (!(symbol.length in symbols)) {
+            symbols[symbol.length] = {};
+          }
+          symbols[symbol.length][symbol.toLowerCase()] = {
+            'symbol': symbol,
+            'name': e
+          };
+        }
+
+        $('textarea').keyup(function(e) {
+          var target = $(e.target);
+          var res = encode(target.val().replace(/\s/g, ''));
+          if (res != unsuccessful) {
+            var s = '';
+            for (rIdx in res[1]) {
+              s += res[1][rIdx][0]['name'] + ' ';
+            }
+            $('div').text(s);
+            target.css('background-color', 'white');
+          } else {
+            target.css('background-color', 'red');
+          }
+          
+        })
+      })
+    </script>
+  <body>
+</html>
