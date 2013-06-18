@@ -1,5 +1,8 @@
 elemental
 =========
+Demo: [http://slackhappy.github.io/elemental/](http://slackhappy.github.io/elemental/)
+
+
 In the style of [http://www.huffingtonpost.com/2013/06/16/funny-yearbook-quotes-_n_3450327.html](http://www.huffingtonpost.com/2013/06/16/funny-yearbook-quotes-_n_3450327.html)
 
 

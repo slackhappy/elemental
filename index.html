@@ -1,11 +1,21 @@
 <html>
   <head>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
     <script src="elements.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <textarea id="message"></textarea>
-    <div id="encoded"></div>
+    <div class="container">
+      <h1>elemental</h1>
+      <p>
+      <textarea id="message" class="span12"></textarea>
+      </p>
+      <p>
+      <div id="encoded"></div>
+      </p>
+    </div>
+    
     <script>
       var symbols = {};
       var memoized = {}; 
@@ -66,7 +76,7 @@
             for (rIdx in res[1]) {
               s += res[1][rIdx][0]['name'] + ' ';
             }
-            $('div').text(s);
+            $('#encoded').text(s);
             target.css('background-color', 'white');
           } else {
             target.css('background-color', 'red');
