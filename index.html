@@ -10,14 +10,23 @@
       <h1>elemental</h1>
       <p>
       <textarea id="message" class="span12"></textarea>
+      <label class="radio inline">
+        <input type="radio" name="endec" id="encode" value="encode" checked />
+        encode
+      </label>
+      <label class="radio inline">
+        <input type="radio" name="endec" id="decode" value="decode" />
+        decode
+      </label>
       </p>
       <p>
-      <div id="encoded"></div>
+      <div id="result"></div>
       </p>
     </div>
     
     <script>
       var symbols = {};
+      var lowerElements = {};
       var memoized = {}; 
       function options(str) {
         var options = [];
@@ -34,6 +43,22 @@
       }
 
       var unsuccessful = [false, []];
+
+      function decode(str) {
+        var result = [];
+        var elems = str.split(/\s+/)
+        for (e in elems) {
+          if (elems[e].length > 0) {
+            elem = elems[e].toLowerCase();
+            if (elem in lowerElements) {
+              result.push(lowerElements[elem]);
+            } else {
+              return unsuccessful;
+            }
+          }
+        }
+        return [true, result];
+      }
 
       function encode(str) {
         if (!str) {
@@ -66,8 +91,33 @@
         }
       }
 
+      function endec(fn, str) {
+        var res;
+        if (fn == 'encode') {
+          res = encode(str.replace(/\s/g, ''));
+        } else {
+          res = decode(str);
+        }
+        if (res == unsuccessful) {
+          return res;
+        }
+
+        var s = '';
+        if (fn == 'encode') {
+          for (rIdx in res[1]) {
+            s += res[1][rIdx][0]['name'] + ' ';
+          }
+        } else {
+          for (rIdx in res[1]) {
+            s += res[1][rIdx]['symbol'];
+          }
+        }
+        return s;
+      }
+
       $(document).ready(function() {
         for (e in elements) {
+          lowerElements[e.toLowerCase()] = elements[e];
           var symbol = elements[e]['symbol'];
           if (!(symbol.length in symbols)) {
             symbols[symbol.length] = {};
@@ -78,22 +128,24 @@
           };
         }
 
-        $('textarea').keyup(function(e) {
-          var target = $(e.target);
-          var res = encode(target.val().replace(/\s/g, ''));
-          if (res != unsuccessful) {
-            var s = '';
-            for (rIdx in res[1]) {
-              console.log(res);
-              console.log(res[1][rIdx]);
-              s += res[1][rIdx][0]['name'] + ' ';
-            }
-            $('#encoded').text(s);
-            target.css('background-color', 'white');
+        function process() {
+          var fn = $('input:radio[name=endec]:checked').val(); 
+          var input = $('textarea');
+          var result = endec(fn, input.val());
+
+          if (result != unsuccessful) {
+            input.css('background-color', 'white');
+            $('#result').text(result);
           } else {
-            target.css('background-color', 'red');
+            input.css('background-color', 'red');
           }
-          
+        }
+
+        $('textarea').keyup(function(e) {
+          process();
+        })
+        $('input:radio').change(function(e) {
+          process();
         })
       })
     </script>
